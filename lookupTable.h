@@ -61,9 +61,9 @@ class LookupTable {
   public:
     Iterator():LT(0){}
     Iterator(LookupTable & x): LT(&x){}
-    const LT_Datum&  operator *();
-    const LT_Datum& operator ++();
-    const LT_Datum& operator ++(int);
+    const D&  operator *();
+    const D& operator ++();
+    const D& operator ++(int);
     int operator !();
 
     void step_fwd(){  assert(LT->cursor_ok());
@@ -147,13 +147,13 @@ class LookupTable {
 #endif
 
 template<class K, class D> 
-LookupTable& LookupTable<K,D>::begin(){
+LookupTable<K,D>& LookupTable<K,D>::begin(){
   cursorM = headM;
   return *this;
 }
 
 template<class K, class D> 
-LT_Node<K,D>::LT_Node(const Pair& pairA, LT_Node *nextA)
+LT_Node<K,D>::LT_Node(const Pair<K,D>& pairA, LT_Node *nextA)
   : pairM(pairA), nextM(nextA)
 {
 }
@@ -171,7 +171,7 @@ LookupTable<K,D>::LookupTable(const LookupTable& source)
 }
 
 template<class K, class D> 
-LookupTable& LookupTable<K,D>::operator =(const LookupTable& rhs)
+LookupTable<K,D>& LookupTable<K,D>::operator =(const LookupTable& rhs)
 {
   if (this != &rhs) {
     destroy();
@@ -213,11 +213,11 @@ const D& LookupTable<K,D>::cursor_datum() const
 }
 
 template<class K, class D> 
-void LookupTable<K,D>::insert(const Pair& pairA)
+void LookupTable<K,D>::insert(const Pair<K,D>& pairA)
 {
   // Add new node at head?
   if (headM == 0 || pairA.key < headM->pairM.key) {
-    headM = new LT_Node(pairA, headM);
+    headM = new LT_Node<K,D>(pairA, headM);
     sizeM++;
   }
 
@@ -228,8 +228,8 @@ void LookupTable<K,D>::insert(const Pair& pairA)
   // Have to search ...
 
   else {
-    LT_Node* before= headM;
-    LT_Node* after=headM->nextM;
+    LT_Node<K,D>* before= headM;
+    LT_Node<K,D>* after=headM->nextM;
 
     while(after!=NULL && (pairA.key > after->pairM.key))
       {
@@ -243,28 +243,28 @@ void LookupTable<K,D>::insert(const Pair& pairA)
       }
     else
       {
-	before->nextM = new LT_Node (pairA, before->nextM);
+	before->nextM = new LT_Node<K,D> (pairA, before->nextM);
 	sizeM++;
       }
   }
 }
 
 template<class K, class D> 
-void LookupTable<K,D>::remove(const LT_Key& keyA)
+void LookupTable<K,D>::remove(const K& keyA)
 {
 
   if (headM == 0 || keyA < headM->pairM.key)
     return;
 
-  LT_Node* doomed_node = 0;
+  LT_Node<K,D>* doomed_node = 0;
   if (keyA == headM->pairM.key) {
     doomed_node = headM;
     headM = headM->nextM;
     sizeM--;
   }
   else {
-    LT_Node      *before = headM;
-    LT_Node *maybe_doomed = headM->nextM;
+    LT_Node<K,D>      *before = headM;
+    LT_Node<K,D> *maybe_doomed = headM->nextM;
     while(maybe_doomed != 0 && keyA > maybe_doomed->pairM.key) {
       before = maybe_doomed;
       maybe_doomed = maybe_doomed->nextM;
@@ -280,9 +280,9 @@ void LookupTable<K,D>::remove(const LT_Key& keyA)
 }
 
 template<class K, class D> 
-void LookupTable<K,D>::find(const LT_Key& keyA)
+void LookupTable<K,D>::find(const K& keyA)
 {
-  LT_Node *ptr=headM;
+  LT_Node<K,D> *ptr=headM;
   while (ptr != NULL && ptr->pairM.key != keyA)
     {
      ptr=ptr->nextM;
@@ -316,7 +316,7 @@ template<class K, class D>
 void LookupTable<K,D>::destroy()
 {
 
-  LT_Node *ptr = headM;
+  LT_Node<K,D> *ptr = headM;
   while (ptr!=NULL)
     {
       headM=headM->nextM;
@@ -338,16 +338,16 @@ void LookupTable<K,D>::copy(const LookupTable& source)
   if(source.headM ==0)
     return;
  
-  for(LT_Node *p = source.headM; p != 0; p=p->nextM)
+  for(LT_Node<K,D> *p = source.headM; p != 0; p=p->nextM)
     {
-      insert(Pair (p->pairM.key, p->pairM.datum));
+      insert(Pair<K,D> (p->pairM.key, p->pairM.datum));
       if(source.cursorM == p)
 	find(p->pairM.key);
     }
 
 }
-//do i addd template??? fkguhl fhkgbbnfclgjkh rrkghlrkjgh lsjkgh gkjh lkjghslgjhlksjghldgkjhlf
-ostream& operator <<   (ostream& os, const LookupTable& lt)
+template<class K, class D>
+ostream& operator <<   (ostream& os, const LookupTable<K,D>& lt)
 {
   if (lt.cursor_ok())
     os <<lt.cursor_key() << "  " << lt.cursor_datum();
