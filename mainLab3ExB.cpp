@@ -7,6 +7,7 @@
 #include "lookupTable.h"
 #include "customer.h"
 #include <cstring>
+#include "mystring2.h"
 using namespace std;
 
 template<class K, class D>
@@ -132,7 +133,7 @@ void test_String()
   // creating lookuptable for Mystring objects
   {
     cout<<"\nCreating and testing LookupTable <int, Mystring> .....\n";
-    LookupTable lt <int, Mstring>;
+    LookupTable lt <int, Mystring>;
 
     // Insert using new keys.
 
@@ -156,7 +157,7 @@ void test_String()
     try_to_find(lt, 8001);
     try_to_find(lt, 8000);
     // test Iterator
-    LookupTable::Iterator it = lt.begin();
+    LookupTable<int, Mystring>::Iterator it = lt.begin();
     cout <<"\nThe first node contains: " <<*it <<endl;
 
     while (!it) {
