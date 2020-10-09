@@ -1,6 +1,10 @@
-//  mystring2.cpp
-// ENSF 480 - Fall 2020 - Lab 3, Ex A and B
 
+/*
+ * File Name: mystring2.cpp
+ * Assignment: Lab 3 Exercise B
+ * Completed by: Madisson Carle and Rubaiyet Meem 
+ * Submission Date: Oct 8, 2020
+ */
 #include "mystring2.h"
 #include <string.h>
 #include <iostream>
