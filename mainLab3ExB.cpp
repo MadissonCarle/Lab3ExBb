@@ -9,11 +9,11 @@
 #include <cstring>
 using namespace std;
 
+template<class K, class D>
+void print(LookupTable<K,D>& lt);
 
-void print(LookupTable& lt);
-
-
-void try_to_find(LookupTable& lt, int key);
+template<class K, class D>
+void try_to_find(LookupTable<K,D>& lt, int key);
 
 void test_Customer();
 
@@ -25,11 +25,11 @@ int main()
 {
 
  //create and test a lookup table with an integer key value and Customer datum
- test_Customer();
+ //test_Customer();
     
  // Uncomment the following function calls when ready to test template class LookupTable
  // create and test a a lookup table of type <int, String>
- // test_String();
+  test_String();
 
  // Uncomment the following function calls when ready to test template class LookupTable
  // create and test a a lookup table of type <int, int>
@@ -40,7 +40,8 @@ int main()
   return 0;
 }
 
-void print(LookupTable& lt)
+template<class K, class D>
+void print(LookupTable<K,D>& lt)
 {
   if (lt.size() == 0)
     cout << "  Table is EMPTY.\n";
@@ -49,7 +50,8 @@ void print(LookupTable& lt)
   }
 }
 
-void try_to_find(LookupTable& lt, int key)
+template<class K, class D>
+void try_to_find(LookupTable<K,D>& lt, K key)
 {
   lt.find(key);
   if (lt.cursor_ok())
@@ -57,7 +59,7 @@ void try_to_find(LookupTable& lt, int key)
   else
     cout << "\nSorry, I couldn't find key: " << key << " in the table.\n";
 }
-
+/*
 void test_Customer()
   //creating a lookup table for customer objects.
   {
@@ -93,6 +95,7 @@ void test_Customer()
       cout <<++it << endl;
     }    
 
+
     //test copying
     lt.go_to_first();
     lt.step_fwd();
@@ -120,8 +123,9 @@ void test_Customer()
     cin.get();
     
   }
+  */
 
-/* Uncomment and modify the following funciton when ready to test LookupTable<int,Mystring>
+/* Uncomment and modify the following funciton when ready to test LookupTable<int,Mystring>*/
 
 void test_String()
 
@@ -140,9 +144,9 @@ void test_String()
     lt.insert(Pair<int, Mystring> (8001,b));
     lt.insert(Pair<int, Mystring> (8004,c));
  
-    //assert(lt.size() == 3);
-    //lt.remove(8004);
-    //assert(lt.size() == 2);
+    assert(lt.size() == 3);
+    lt.remove(8004);
+    assert(lt.size() == 2);
     cout << "\nPrinting table after inserting 3 new keys and  and 1 removal...\n";
     print(lt);
 
@@ -185,7 +189,7 @@ void test_String()
     cin.get();
   }
 
-*/
+
 
 
 /* Uncomment and modify the following funciton when ready to test LookupTable<int,int>

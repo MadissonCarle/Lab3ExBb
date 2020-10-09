@@ -37,9 +37,12 @@ struct Pair
   D datum;
 };
 
+
+template<class K, class D> class LookupTable;
+
 template<class K, class D>
 class LT_Node {
-  friend class LookupTable;
+  friend class LookupTable<K,D>;
 private:
   Pair<K,D> pairM;
   LT_Node *nextM;
@@ -54,13 +57,13 @@ class LookupTable {
 
   // Nested class
   class Iterator {
-    friend class LookupTable ;
-    LookupTable *LT;
+    //friend class LookupTable ;
+    LookupTable<K,D> *LT;
 //    LT_Node* cursor;
     
   public:
     Iterator():LT(0){}
-    Iterator(LookupTable & x): LT(&x){}
+    Iterator(LookupTable<K, D> & x): LT(&x){}
     const D&  operator *();
     const D& operator ++();
     const D& operator ++(int);
@@ -71,8 +74,8 @@ class LookupTable {
   };
 
   LookupTable();
-  LookupTable(const LookupTable  & source);
-  LookupTable& operator =(const LookupTable& rhs);
+  LookupTable(const LookupTable<K,D>  & source);
+  LookupTable& operator =(const LookupTable<K,D>& rhs);
   ~LookupTable();
 
   LookupTable& begin();
@@ -129,7 +132,7 @@ class LookupTable {
   void make_empty();
   // PROMISES: size() == 0.
 
-  friend  ostream& operator << (ostream& os, const LookupTable& lt);
+  friend ostream& operator << <K,D> (ostream& os, const LookupTable<K,D>& lt);
 
  private:
   int sizeM;
@@ -147,13 +150,13 @@ class LookupTable {
 #endif
 
 template<class K, class D> 
-LookupTable<K,D>& LookupTable<K,D>::begin(){
+LookupTable<K, D>& LookupTable<K,D>::begin(){
   cursorM = headM;
   return *this;
 }
 
 template<class K, class D> 
-LT_Node<K,D>::LT_Node(const Pair<K,D>& pairA, LT_Node *nextA)
+LT_Node<K,D>::LT_Node(const Pair<K,D>& pairA, LT_Node<K,D> *nextA)
   : pairM(pairA), nextM(nextA)
 {
 }
@@ -165,13 +168,13 @@ LookupTable<K,D>::LookupTable()
 }
 
 template<class K, class D> 
-LookupTable<K,D>::LookupTable(const LookupTable& source)
+LookupTable<K,D>::LookupTable(const LookupTable<K,D>& source)
 {
   copy(source);
 }
 
 template<class K, class D> 
-LookupTable<K,D>& LookupTable<K,D>::operator =(const LookupTable& rhs)
+LookupTable<K,D>& LookupTable<K,D>::operator =(const LookupTable<K,D>& rhs)
 {
   if (this != &rhs) {
     destroy();
@@ -263,8 +266,8 @@ void LookupTable<K,D>::remove(const K& keyA)
     sizeM--;
   }
   else {
-    LT_Node<K,D>      *before = headM;
-    LT_Node<K,D> *maybe_doomed = headM->nextM;
+    LT_Node<K,D>*before = headM;
+    LT_Node<K,D>*maybe_doomed = headM->nextM;
     while(maybe_doomed != 0 && keyA > maybe_doomed->pairM.key) {
       before = maybe_doomed;
       maybe_doomed = maybe_doomed->nextM;
@@ -282,7 +285,7 @@ void LookupTable<K,D>::remove(const K& keyA)
 template<class K, class D> 
 void LookupTable<K,D>::find(const K& keyA)
 {
-  LT_Node<K,D> *ptr=headM;
+  LT_Node<K,D>*ptr=headM;
   while (ptr != NULL && ptr->pairM.key != keyA)
     {
      ptr=ptr->nextM;
@@ -316,7 +319,7 @@ template<class K, class D>
 void LookupTable<K,D>::destroy()
 {
 
-  LT_Node<K,D> *ptr = headM;
+  LT_Node<K,D>*ptr = headM;
   while (ptr!=NULL)
     {
       headM=headM->nextM;
@@ -329,7 +332,7 @@ void LookupTable<K,D>::destroy()
 }
 
 template<class K, class D> 
-void LookupTable<K,D>::copy(const LookupTable& source)
+void LookupTable<K,D>::copy(const LookupTable<K,D>& source)
 {
 
   headM=0;
@@ -338,14 +341,15 @@ void LookupTable<K,D>::copy(const LookupTable& source)
   if(source.headM ==0)
     return;
  
-  for(LT_Node<K,D> *p = source.headM; p != 0; p=p->nextM)
+  for(LT_Node<K,D>*p = source.headM; p != 0; p=p->nextM)
     {
-      insert(Pair<K,D> (p->pairM.key, p->pairM.datum));
+      insert(Pair<K,D>(p->pairM.key, p->pairM.datum));
       if(source.cursorM == p)
 	find(p->pairM.key);
     }
 
 }
+//do i addd template??? fkguhl fhkgbbnfclgjkh rrkghlrkjgh lsjkgh gkjh lkjghslgjhlksjghldgkjhlf
 template<class K, class D>
 ostream& operator <<   (ostream& os, const LookupTable<K,D>& lt)
 {
@@ -368,7 +372,7 @@ template<class K, class D>
 const D& LookupTable<K,D>::Iterator::operator ++()
 {
   assert(LT->cursor_ok());
-  const LT_Datum & x = LT->cursor_datum();
+  const D& x = LT->cursor_datum();
   LT->step_fwd();
   return x;
 }
